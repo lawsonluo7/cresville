@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cresville - Village Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #2a2a2a;
+            color: #fff;
+        }
+
+        .menu-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a, #3a3a3a);
+        }
+
+        .menu-box {
+            background: #1a1a1a;
+            border: 3px solid #4a9eff;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #4a9eff;
+            text-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+        }
+
+        .menu-box p {
+            margin-bottom: 30px;
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: 2px solid #4a9eff;
+            background: #0a0a0a;
+            color: #4a9eff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #4a9eff;
+            color: #000;
+            box-shadow: 0 0 15px rgba(74, 158, 255, 0.5);
+        }
+
+        .load-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #4a9eff;
+        }
+
+        .load-section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #4a9eff;
+        }
+
+        .save-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: #0a0a0a;
+            border: 1px solid #4a9eff;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .save-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .save-item:hover {
+            background: #2a2a2a;
+            border-color: #4a9eff;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #0a0a0a;
+            border: 2px solid #4a9eff;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]::placeholder {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <div class="menu-box">
+            <h1>CRESVILLE</h1>
+            <p>Build and manage your village</p>
+
+            <div class="button-group">
+                <button onclick="newGame()">New Game</button>
+            </div>
+
+            <div class="load-section">
+                <h2>Load Game</h2>
+                <div class="save-list" id="saveList"></div>
+                <input type="text" id="seedInput" placeholder="Or enter a seed number...">
+                <button onclick="loadWithSeed()">Load Seed</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/world.js"></script>
+    <script>
+        function newGame() {
+            const seed = Math.floor(Math.random() * 1000000);
+            startGame(seed);
+        }
+
+        function loadWithSeed() {
+            const seed = parseInt(document.getElementById('seedInput').value);
+            if (!isNaN(seed)) {
+                startGame(seed);
+            } else {
+                alert('Please enter a valid seed number');
+            }
+        }
+
+        function startGame(seed) {
+            localStorage.setItem('currentSeed', seed);
+            window.location.href = 'game.html';
+        }
+
+        function loadSaveList() {
+            const saveList = document.getElementById('saveList');
+            const saves = JSON.parse(localStorage.getItem('saves') || '[]');
+            
+            saveList.innerHTML = '';
+            if (saves.length === 0) {
+                saveList.innerHTML = '<p style="color: #666;">No saves yet</p>';
+                return;
+            }
+
+            saves.forEach((save, index) => {
+                const item = document.createElement('div');
+                item.className = 'save-item';
+                item.textContent = `${save.name} - Seed: ${save.seed}`;
+                item.onclick = () => startGame(save.seed);
+                saveList.appendChild(item);
+            });
+        }
+
+        loadSaveList();
+    </script>
+</body>
+</html>
